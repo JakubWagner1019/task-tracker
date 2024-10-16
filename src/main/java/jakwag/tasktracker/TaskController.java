@@ -10,61 +10,62 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.atomic.AtomicLong;
+import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/tasks")
 public class TaskController {
 
-    private final AtomicLong counter = new AtomicLong();
-    private final Map<Long, Task> tasks = Collections.synchronizedMap(new HashMap<>());
+    private final TaskRepository taskRepository;
+
+    public TaskController(TaskRepository taskRepository) {
+        this.taskRepository = taskRepository;
+    }
 
     @GetMapping
     public ResponseEntity<Collection<Task>> getTasks() {
-        Collection<Task> values;
-        synchronized (tasks) {
-            values = new ArrayList<>(tasks.values());
-        }
-        return ResponseEntity.ok(values);
+        List<TaskEntity> all = taskRepository.findAll();
+        List<Task> tasks = all.stream().map(TaskController::toTask).toList();
+        return ResponseEntity.ok(tasks);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<Task> getTask(@PathVariable("id") long id) {
-        Task task;
-        synchronized (tasks) {
-            task = tasks.get(id);
+        Optional<TaskEntity> taskEntity = taskRepository.findById(id);
+        Optional<Task> task = taskEntity.map(TaskController::toTask);
+        if (task.isPresent()) {
+            return ResponseEntity.ok(task.get());
+        } else {
+            return ResponseEntity.notFound().build();
         }
-        return ResponseEntity.ok(task);
     }
 
     @PostMapping
     public ResponseEntity<Void> addTask(@RequestBody Task task) {
-        long id = counter.incrementAndGet();
-        Task taskWithId = task.withId(id);
-        synchronized (tasks) {
-            tasks.put(id, taskWithId);
-        }
-        return ResponseEntity.status(201).header("Location","/api/tasks/" + id).build();
+        TaskEntity save = taskRepository.save(toTaskEntity(task));
+        Long id = save.getId();
+        return ResponseEntity.status(201).header("Location", "/api/tasks/" + id).build();
     }
 
     @PutMapping
     public ResponseEntity<Void> updateTask(@RequestBody Task task) {
-        synchronized (tasks) {
-            tasks.put(task.id(), task);
-        }
-        return ResponseEntity.status(201).header("Location","/api/tasks/" + task.id()).build();
+        taskRepository.save(toTaskEntity(task));
+        return ResponseEntity.status(201).header("Location", "/api/tasks/" + task.id()).build();
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteTask(@PathVariable("id") long id) {
-        synchronized (tasks) {
-            tasks.remove(id);
-        }
-        return ResponseEntity.status(204).header("Location","/api/tasks/" + id).build();
+        taskRepository.deleteById(id);
+        return ResponseEntity.status(204).header("Location", "/api/tasks/" + id).build();
+    }
+
+    private static Task toTask(TaskEntity taskEntity) {
+        return new Task(taskEntity.getId(), taskEntity.getTitle(), taskEntity.getDescription(), taskEntity.getStatus());
+    }
+
+    private static TaskEntity toTaskEntity(Task task) {
+        return new TaskEntity(task.id(), task.title(), task.description(), task.status());
     }
 }
