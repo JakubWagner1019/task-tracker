@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Collection;
@@ -25,8 +26,13 @@ public class TaskController {
     }
 
     @GetMapping
-    public ResponseEntity<Collection<Task>> getTasks() {
-        List<TaskEntity> all = taskRepository.findAll();
+    public ResponseEntity<Collection<Task>> getTasks(@RequestParam(name = "status", required = false) String status) {
+        List<TaskEntity> all;
+        if(status == null) {
+            all = taskRepository.findAll();
+        } else {
+            all = taskRepository.findAllByStatus(status);
+        }
         List<Task> tasks = all.stream().map(TaskController::toTask).toList();
         return ResponseEntity.ok(tasks);
     }
