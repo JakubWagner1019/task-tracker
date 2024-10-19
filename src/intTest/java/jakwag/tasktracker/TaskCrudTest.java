@@ -178,4 +178,58 @@ public class TaskCrudTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("description").value("No desc"))
                 .andExpect(MockMvcResultMatchers.jsonPath("status").value("Done"));
     }
+
+    @Test
+    void shouldReturnTaskWithUpdatedOnlyTheNonNullFields_whenUsingPatchMethod() throws Exception {
+        MvcResult mvcResult = mvc.perform(MockMvcRequestBuilders.post(TASKS_PATH).content(TASK_JSON).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.status().isCreated())
+                .andExpect(MockMvcResultMatchers.header().string("Location", Matchers.startsWith(TASKS_PATH_WITH_SLASH)))
+                .andReturn();
+
+        String location = mvcResult.getResponse().getHeader("Location");
+        assertNotNull(location);
+
+        String id = location.substring(TASKS_PATH_WITH_SLASH.length());
+
+        mvc.perform(MockMvcRequestBuilders.patch(TASKS_PATH_WITH_SLASH + id).content("{\n" +
+                "  \"status\" : \"Done\"\n" +
+                "}").contentType(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("id").value(id))
+                .andExpect(MockMvcResultMatchers.jsonPath("title").value("Test title 123"))
+                .andExpect(MockMvcResultMatchers.jsonPath("description").value("Test description 123"))
+                .andExpect(MockMvcResultMatchers.jsonPath("status").value("Done"));
+
+        mvc.perform(MockMvcRequestBuilders.get(TASKS_PATH_WITH_SLASH + id))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("id").value(id))
+                .andExpect(MockMvcResultMatchers.jsonPath("title").value("Test title 123"))
+                .andExpect(MockMvcResultMatchers.jsonPath("description").value("Test description 123"))
+                .andExpect(MockMvcResultMatchers.jsonPath("status").value("Done"));
+
+        mvc.perform(MockMvcRequestBuilders.patch(TASKS_PATH_WITH_SLASH + id).content("{\n" +
+                        "  \"title\" : \"Changed title 321\"\n" +
+                        "}").contentType(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("id").value(id))
+                .andExpect(MockMvcResultMatchers.jsonPath("title").value("Changed title 321"))
+                .andExpect(MockMvcResultMatchers.jsonPath("description").value("Test description 123"))
+                .andExpect(MockMvcResultMatchers.jsonPath("status").value("Done"));
+
+        mvc.perform(MockMvcRequestBuilders.get(TASKS_PATH_WITH_SLASH + id))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("id").value(id))
+                .andExpect(MockMvcResultMatchers.jsonPath("title").value("Changed title 321"))
+                .andExpect(MockMvcResultMatchers.jsonPath("description").value("Test description 123"))
+                .andExpect(MockMvcResultMatchers.jsonPath("status").value("Done"));
+    }
+
+    @Test
+    void shouldReturnNotFound_whenTryingToPatchUnassignedId() throws Exception {
+        int idWithNoAssignedEntity = 1; //DB should be empty, ID could have any value
+        mvc.perform(MockMvcRequestBuilders.patch(TASKS_PATH_WITH_SLASH + idWithNoAssignedEntity).content("{\n" +
+                        "  \"title\" : \"Changed title 321\"\n" +
+                        "}").contentType(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.status().isNotFound());
+    }
 }

@@ -3,6 +3,7 @@ package jakwag.tasktracker;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -65,6 +66,30 @@ public class TaskController {
     public ResponseEntity<Void> deleteTask(@PathVariable("id") long id) {
         taskRepository.deleteById(id);
         return ResponseEntity.status(204).header("Location", "/api/tasks/" + id).build();
+    }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<Task> patchTask(@PathVariable("id") long id, @RequestBody Task task) {
+        Optional<TaskEntity> taskEntity = taskRepository.findById(id);
+        if (taskEntity.isPresent()) {
+            TaskEntity entity = taskEntity.get();
+            if (task.title() != null) {
+                entity.setTitle(task.title());
+            }
+
+            if (task.description() != null) {
+                entity.setDescription(task.description());
+            }
+
+            if (task.status() != null) {
+                entity.setStatus(task.status());
+            }
+
+            taskRepository.save(entity);
+            Task modifiedTask = toTask(entity);
+            return ResponseEntity.status(200).body(modifiedTask);
+        }
+        return ResponseEntity.notFound().build();
     }
 
     private static Task toTask(TaskEntity taskEntity) {
