@@ -13,6 +13,18 @@ java {
     }
 }
 
+sourceSets {
+    intTest {
+        compileClasspath += sourceSets.main.output
+        runtimeClasspath += sourceSets.main.output
+    }
+}
+
+configurations {
+    intTestImplementation.extendsFrom implementation
+    intTestRuntimeOnly.extendsFrom runtimeOnly
+}
+
 repositories {
     mavenCentral()
 }
@@ -25,8 +37,31 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+    intTestImplementation group: 'org.testcontainers', name: 'junit-jupiter', version: '1.20.2'
+    intTestImplementation group: 'org.testcontainers', name: 'postgresql', version: '1.20.2'
+    intTestImplementation group: 'org.testcontainers', name: 'testcontainers', version: '1.20.2'
+    intTestImplementation 'org.springframework.boot:spring-boot-starter-test'
+    intTestRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
 tasks.named('test') {
     useJUnitPlatform()
 }
+
+tasks.register('integrationTest', Test) {
+    description = 'Runs integration tests.'
+    group = 'verification'
+
+    testClassesDirs = sourceSets.intTest.output.classesDirs
+    classpath = sourceSets.intTest.runtimeClasspath
+    shouldRunAfter test
+
+    useJUnitPlatform()
+
+    testLogging {
+        events "passed"
+    }
+}
+
+check.dependsOn integrationTest
