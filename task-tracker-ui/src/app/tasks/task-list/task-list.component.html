@@ -1,0 +1,17 @@
+<table>
+  @if(title) {
+    <caption>{{title}}</caption>
+  }
+  <thead>
+    <tr>
+      <th>Id</th>
+      <th>Title</th>
+      <th>Status</th>
+    </tr>
+  </thead>
+  <tbody>
+  @for (task of tasks; track task.title) {
+    <tr tt-task-row [task]="task" (taskSelected)="taskSelected.emit($event)"></tr>
+  }
+  </tbody>
+</table>

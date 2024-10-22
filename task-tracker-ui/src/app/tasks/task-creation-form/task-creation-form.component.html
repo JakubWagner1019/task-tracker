@@ -1,0 +1,19 @@
+{{ model | json }}
+<div>
+  <label for="title">Title</label>
+  <br>
+  <input [(ngModel)]="model.title" id="title" type="text">
+  <br>
+  <label for="description">Description</label>
+  <br>
+  <textarea [(ngModel)]="model.description" id="description" type="text"></textarea>
+  <br>
+  <label for="status">Status</label>
+  <br>
+  <select [(ngModel)]="model.status" id="status">
+    <option selected value="Open">Open</option>
+    <option value="Done">Done</option>
+  </select>
+  <br>
+  <input (click)="submit()" type="button" value="Submit"/>
+</div>
