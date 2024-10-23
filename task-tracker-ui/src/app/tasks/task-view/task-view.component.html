@@ -1,6 +1,6 @@
 <div class="main-div">
   <div>
-    <tt-task-detail [task]="selectedTask"></tt-task-detail>
+    <tt-task-detail [task]="selectedTask" (refresh)="refreshTaskLists();"></tt-task-detail>
     <tt-task-creation-form (refresh)="refreshTaskLists();"></tt-task-creation-form>
   </div>
   <div class="task-list">

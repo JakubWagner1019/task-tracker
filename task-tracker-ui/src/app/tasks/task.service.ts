@@ -21,4 +21,8 @@ export class TaskService {
   createTask(task: Task): Observable<void> {
     return this.http.post<void>("http://localhost:8080/api/tasks", task);
   }
+
+  changeStatus(id: number, status: string): Observable<void> {
+    return this.http.patch<void>("http://localhost:8080/api/tasks/" + id, {status: status});
+  }
 }

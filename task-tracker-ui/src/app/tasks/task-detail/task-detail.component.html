@@ -1,6 +1,11 @@
 @if (task) {
   <h3>{{task.title}}</h3>
-  <p>Status: <span>{{task.status}}</span></p>
+  <p>Status: <span>{{task.status}}</span> <span>
+  <select (change)="onStatusChange($event.target);" [(ngModel)]="task.status" id="status">
+    <option value="Open">Open</option>
+    <option value="Done">Done</option>
+  </select>
+  </span></p>
   <p>{{task.description}}</p>
 } @else {
   <p>No selected task</p>
