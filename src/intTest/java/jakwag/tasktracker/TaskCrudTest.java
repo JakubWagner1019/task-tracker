@@ -25,11 +25,21 @@ public class TaskCrudTest {
 
     private static final String TASKS_PATH_WITH_SLASH = "/api/tasks/";
     private static final String TASKS_PATH = "/api/tasks";
+    private final String TASK_JSON_EMPTY_STATUS = "{\n" +
+            "  \"title\": \"Test title 123\",\n" +
+            "  \"description\" : \"" + "Test description 123" + "\",\n" +
+            "  \"status\" : \"\"\n" +
+            "}";
+    private final String TASK_JSON_NO_STATUS = "{\n" +
+            "  \"title\": \"Test title 123\",\n" +
+            "  \"description\" : \"" + "Test description 123" + "\"\n" +
+            "}";
     private final String TASK_JSON = "{\n" +
             "  \"title\": \"Test title 123\",\n" +
             "  \"description\" : \"" + "Test description 123" + "\",\n" +
             "  \"status\" : \"Open\"\n" +
             "}";
+
 
     @Autowired
     protected WebApplicationContext context;
@@ -231,5 +241,29 @@ public class TaskCrudTest {
                         "  \"title\" : \"Changed title 321\"\n" +
                         "}").contentType(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.status().isNotFound());
+    }
+
+    @Test
+    void shouldReturnElementWithStatusOpen_whenCreatingElementWithoutStatus() throws Exception {
+        mvc.perform(MockMvcRequestBuilders.post(TASKS_PATH).content(TASK_JSON_NO_STATUS).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.status().isCreated())
+                .andExpect(MockMvcResultMatchers.header().string("Location", Matchers.startsWith(TASKS_PATH_WITH_SLASH)));
+        mvc.perform(MockMvcRequestBuilders.get(TASKS_PATH))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("[0].title").value("Test title 123"))
+                .andExpect(MockMvcResultMatchers.jsonPath("[0].description").value("Test description 123"))
+                .andExpect(MockMvcResultMatchers.jsonPath("[0].status").value("Open"));
+    }
+
+    @Test
+    void shouldReturnElementWithStatusOpen_whenCreatingElementWithStatusEmpty() throws Exception {
+        mvc.perform(MockMvcRequestBuilders.post(TASKS_PATH).content(TASK_JSON_EMPTY_STATUS).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.status().isCreated())
+                .andExpect(MockMvcResultMatchers.header().string("Location", Matchers.startsWith(TASKS_PATH_WITH_SLASH)));
+        mvc.perform(MockMvcRequestBuilders.get(TASKS_PATH))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("[0].title").value("Test title 123"))
+                .andExpect(MockMvcResultMatchers.jsonPath("[0].description").value("Test description 123"))
+                .andExpect(MockMvcResultMatchers.jsonPath("[0].status").value("Open"));
     }
 }
