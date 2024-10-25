@@ -20,7 +20,6 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @SpringBootTest(properties = "spring.flyway.clean-disabled=false")
 @Testcontainers
-@ActiveProfiles("intTest")
 public class TaskCrudTest {
 
     private static final String TASKS_PATH_WITH_SLASH = "/api/tasks/";
