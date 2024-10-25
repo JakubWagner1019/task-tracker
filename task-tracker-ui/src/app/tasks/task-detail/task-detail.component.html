@@ -1,5 +1,5 @@
 @if (task) {
-  <h3>{{task.title}}</h3>
+  <h3><span>#{{task.id}} </span>{{task.title}}</h3>
   <p>Status: <span>{{task.status}}</span> <span>
   <select (change)="onStatusChange($event.target);" [(ngModel)]="task.status" id="status">
     <option value="Open">Open</option>
