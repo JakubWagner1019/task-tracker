@@ -2,6 +2,9 @@
   @if(title) {
     <caption>{{title}}</caption>
   }
+  @if(error) {
+    <caption class="error-msg">Error getting task list from the server</caption>
+  }
   <thead>
     <tr>
       <th>Id</th>

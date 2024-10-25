@@ -2,6 +2,7 @@ import {Component, EventEmitter, Input, Output} from '@angular/core';
 import {TaskRowComponent} from "../task-row/task-row.component";
 import { Task } from '../task';
 import {TaskService} from "../task.service";
+import {Observable} from "rxjs";
 
 @Component({
   selector: 'tt-task-list',
@@ -15,6 +16,7 @@ export class TaskListComponent {
   @Input() title?: string;
   @Output() taskSelected: EventEmitter<Task> = new EventEmitter<Task>();
   tasks: Task[] = [];
+  error: boolean = false;
 
   constructor(private taskService: TaskService) {
   }
@@ -24,10 +26,20 @@ export class TaskListComponent {
   }
 
   refresh() {
+    let observable: Observable<Task[]>
     if(this.status) {
-      this.taskService.getAllByStatus(this.status).subscribe(tasks => this.tasks = tasks);
+      observable = this.taskService.getAllByStatus(this.status)
     } else {
-      this.taskService.getAll().subscribe(tasks => this.tasks = tasks);
+      observable = this.taskService.getAll();
     }
+    observable.subscribe({
+      next : (tasks: Task[]) => {
+        this.error = false;
+        this.tasks = tasks
+      },
+      error: (error) => {
+        this.error = true;
+      }
+    });
   }
 }
