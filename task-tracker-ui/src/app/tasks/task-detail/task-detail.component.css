@@ -1,0 +1,10 @@
+.description {
+  padding: 10px;
+  background: #eeeeee;
+  min-height: 100px;
+  min-width: 200px;
+  border: solid;
+  border-width: 1px;
+  border-color: black;
+  border-radius: 5px;
+}

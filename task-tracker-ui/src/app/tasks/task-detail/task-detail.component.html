@@ -1,12 +1,14 @@
 @if (task) {
-  <h3><span>#{{task.id}} </span>{{task.title}}</h3>
-  <p>Status: <span>{{task.status}}</span> <span>
-  <select (change)="onStatusChange($event.target);" [(ngModel)]="task.status" id="status">
+  <h3><span>#{{task.id}} </span><span contenteditable (focusout)="titleChanged($event.target)">{{task.title}}</span></h3>
+  <p>Status: <span>
+  <select (change)="statusChanged($event.target);" [(ngModel)]="task.status" id="status">
     <option value="Open">Open</option>
     <option value="Done">Done</option>
   </select>
   </span></p>
-  <p>{{task.description}}</p>
+  <div class="description" contenteditable (focusout)="descriptionChanged($event.target)">{{task.description}}</div>
+  <button (click)="dismiss();" [hidden]="changes.length === 0">Dismiss</button>
+  <button (click)="submit();" [hidden]="changes.length === 0">Submit</button>
 } @else {
   <p>No selected task</p>
 }

@@ -1,11 +1,11 @@
 <div class="main-div">
   <div>
-    <tt-task-detail [task]="selectedTask" (refresh)="refreshTaskLists();"></tt-task-detail>
+    <tt-task-detail (taskUpdated)="refreshTaskLists($event);"></tt-task-detail>
     <tt-task-creation-form (refresh)="refreshTaskLists();"></tt-task-creation-form>
   </div>
   <div class="task-list">
-    <tt-task-list [title]="'Open tasks'" [status]="'Open'" (taskSelected)="selectedTask = $event"></tt-task-list>
-    <tt-task-list [title]="'Completed tasks'" [status]="'Done'" (taskSelected)="selectedTask = $event"></tt-task-list>
+    <tt-task-list [title]="'Open tasks'" [status]="'Open'" (taskSelected)="selectTask($event)"></tt-task-list>
+    <tt-task-list [title]="'Completed tasks'" [status]="'Done'" (taskSelected)="selectTask($event)"></tt-task-list>
   </div>
 </div>
 

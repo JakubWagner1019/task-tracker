@@ -14,6 +14,10 @@ export class TaskService {
     this.taskUrl = environment.baseUrl + '/api/tasks';
   }
 
+  getById(id: number): Observable<Task> {
+    return this.http.get<Task>(this.taskUrl + '/' + id);
+  }
+
   getAll(): Observable<Task[]> {
     return this.http.get<Task[]>(this.taskUrl);
   }
@@ -26,7 +30,7 @@ export class TaskService {
     return this.http.post<void>(this.taskUrl, task);
   }
 
-  changeStatus(id: number, status: string): Observable<void> {
-    return this.http.patch<void>(this.taskUrl + '/' + id, {status: status});
+  patchTask(id: number, task: Task): Observable<Task> {
+    return this.http.patch<Task>(this.taskUrl + '/' + id, task);
   }
 }
