@@ -1,8 +1,11 @@
-<nav>
-  <ul style="display: flex; flex-direction: row; gap: 30px">
-    <li><a routerLink="/tasks">Home</a></li>
-    <li><a routerLink="/createTask">New Task</a></li>
-    <li><a routerLink="/completedTasks">Finished Tasks</a></li>
-  </ul>
-</nav>
-<router-outlet/>
+<header>
+  <nav>
+    <ul style="display: flex; flex-direction: row; gap: 30px; list-style: none">
+      <li><a routerLink="/tasks">Home</a></li>
+      <li><a routerLink="/createTask">New Task</a></li>
+      <li><a routerLink="/completedTasks">Finished Tasks</a></li>
+    </ul>
+  </nav>
+</header>
+<main><router-outlet/></main>
+
