@@ -14,7 +14,7 @@
   </thead>
   <tbody>
   @for (task of tasks; track task.title) {
-    <tr tt-task-row [task]="task" (taskSelected)="taskSelected.emit($event)"></tr>
+    <tr tt-task-row [task]="task"></tr>
   }
   </tbody>
 </table>

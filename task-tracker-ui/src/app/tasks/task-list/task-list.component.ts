@@ -14,7 +14,6 @@ import {Observable} from "rxjs";
 export class TaskListComponent {
   @Input() status?: string;
   @Input() title?: string;
-  @Output() taskSelected: EventEmitter<Task> = new EventEmitter<Task>();
   tasks: Task[] = [];
   error: boolean = false;
 

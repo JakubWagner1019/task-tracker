@@ -1,5 +1,5 @@
-import {Component, EventEmitter, Input, Output} from '@angular/core';
-import { Task } from '../task';
+import {Component, Input} from '@angular/core';
+import {Task} from '../task';
 import {RouterLink} from "@angular/router";
 
 @Component({
@@ -13,9 +13,4 @@ import {RouterLink} from "@angular/router";
 })
 export class TaskRowComponent {
   @Input() task!: Task;
-  @Output() taskSelected: EventEmitter<Task> = new EventEmitter<Task>();
-
-  select() {
-    this.taskSelected.emit(this.task);
-  }
 }
