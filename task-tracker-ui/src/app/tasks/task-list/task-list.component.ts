@@ -34,6 +34,7 @@ export class TaskListComponent {
     observable.subscribe({
       next : (tasks: Task[]) => {
         this.error = false;
+        tasks.sort((a: Task, b: Task) => {return (a.id ? a.id : 0) - (b.id ? b.id : 0)});
         this.tasks = tasks
       },
       error: (error) => {
