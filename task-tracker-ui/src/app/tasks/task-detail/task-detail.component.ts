@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Output} from '@angular/core';
+import {Component, EventEmitter, Input, Output} from '@angular/core';
 import {Task} from '../task';
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {TaskService} from "../task.service";
@@ -39,7 +39,7 @@ const isDescriptionChange = (change: Change): change is DescriptionChange => cha
 export class TaskDetailComponent {
   @Output() taskUpdated: EventEmitter<Task> = new EventEmitter<Task>();
 
-  task?: Task;
+  @Input() task?: Task;
   originalTask?: Task;
 
   changes: Change[] = []
